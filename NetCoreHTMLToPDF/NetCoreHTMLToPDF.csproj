@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Partiolainen</Authors>
+    <Company>Part</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>html to pdf converter, web page (url) to pdf converter</Description>
+    <PackageProjectUrl>https://github.com/Partiolainen/NetCoreHTMLToPDF</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Partiolainen/NetCoreHTMLToPDF</RepositoryUrl>
+    <Version>1.0.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="wkhtmltopdf.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wkhtmltopdf.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
