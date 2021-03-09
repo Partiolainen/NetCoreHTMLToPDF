@@ -73,15 +73,13 @@ namespace NetCoreHTMLToPDF
                     WindowStyle = ProcessWindowStyle.Hidden,
                     CreateNoWindow = true,
                     UseShellExecute = false,
-                    WorkingDirectory = directory,
-                    //RedirectStandardError = true
+                    WorkingDirectory = directory
                 };
 			
                 var process = Process.Start(processStartInfo);
 
                 if (process != null)
                 {
-                    //process.ErrorDataReceived += Process_ErrorDataReceived;
                     if (timeOut == null) process.WaitForExit();
                     else process.WaitForExit(timeOut.Value);
                 }
@@ -99,10 +97,5 @@ namespace NetCoreHTMLToPDF
             return bytes;
 
         }
-
-        //private static void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        //{
-        //    throw new Exception(e.Data);
-        //}
     }
 }
