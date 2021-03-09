@@ -62,22 +62,32 @@ namespace NetCoreHTMLToPDF
         public byte[] FromUrl(string url, PageSize pageSize = PageSize.A4, PageOrientation pageOrientation = PageOrientation.Portrait, string customFlags = null)
         {
             var filename = Path.Combine(directory, $"{Guid.NewGuid()}.pdf");
+            var arguments = $"--page-size {pageSize} --orientation {pageOrientation} {customFlags} \"{url}\" \"{filename}\"";
 
-            var processStartInfo = new ProcessStartInfo(toolFilepath, $"--page-size {pageSize} --orientation {pageOrientation} {customFlags} \"{url}\" \"{filename}\"")
+            try
             {
-	            WindowStyle = ProcessWindowStyle.Hidden,
-	            CreateNoWindow = true,
-	            UseShellExecute = false,
-	            WorkingDirectory = directory,
-	            RedirectStandardError = true
-            };
+                var processStartInfo = new ProcessStartInfo(toolFilepath, arguments)
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WorkingDirectory = directory,
+                    RedirectStandardError = true
+                };
 			
-			var process = Process.Start(processStartInfo);
+                var process = Process.Start(processStartInfo);
 
-            if (process != null)
+                if (process != null)
+                {
+                    process.ErrorDataReceived += Process_ErrorDataReceived;
+                    process.WaitForExit();
+                }
+            }
+            catch (Exception e)
             {
-	            process.ErrorDataReceived += Process_ErrorDataReceived;
-	            process.WaitForExit();
+                Console.WriteLine($"Process path line: {toolFilepath} {arguments}");
+                Console.WriteLine(e);
+                throw;
             }
 
             if (!File.Exists(filename)) throw new Exception("Something went wrong. Please check input parameters");
