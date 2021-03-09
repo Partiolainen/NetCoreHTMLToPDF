@@ -34,19 +34,20 @@ namespace NetCoreHTMLToPDF
             resourceStream?.CopyTo(fileStream);
         }
 
-		/// <summary>
-		/// Converts HTML string to image
-		/// </summary>
-		/// <param name="html">HTML string</param>
+        /// <summary>
+        /// Converts HTML string to image
+        /// </summary>
+        /// <param name="html">HTML string</param>
         /// <param name="pageSize">Set paper size to: A4, Letter, etc. (default A4)</param>
         /// <param name="pageOrientation">Set orientation to Landscape or Portrait (default Portrait)</param>
-		/// <param name="customFlags">Custom flags for wkhtmltoimage lib</param>
-		/// <returns></returns>
-		public byte[] FromHtmlString(string html, PageSize pageSize = PageSize.A4, PageOrientation pageOrientation = PageOrientation.Portrait, string customFlags = null)
+        /// <param name="customFlags">Custom flags for wkhtmltoimage lib</param>
+        /// <param name="timeOut">Execution timeout</param>
+        /// <returns></returns>
+        public byte[] FromHtmlString(string html, PageSize pageSize = PageSize.A4, PageOrientation pageOrientation = PageOrientation.Portrait, string customFlags = null, int? timeOut = null)
         {
             var filename = Path.Combine(directory, $"{Guid.NewGuid()}.html");
             File.WriteAllText(filename, html);
-            var bytes = FromUrl(filename, pageSize, pageOrientation, customFlags);
+            var bytes = FromUrl(filename, pageSize, pageOrientation, customFlags, timeOut);
             File.Delete(filename);
             return bytes;
         }
@@ -58,8 +59,9 @@ namespace NetCoreHTMLToPDF
         /// <param name="pageSize">Set paper size to: A4, Letter, etc. (default A4)</param>
         /// <param name="pageOrientation">Set orientation to Landscape or Portrait (default Portrait)</param>
         /// <param name="customFlags">Custom flags for wkhtmltopdf lib</param>
+        /// <param name="timeOut">Execution timeout</param>
         /// <returns></returns>
-        public byte[] FromUrl(string url, PageSize pageSize = PageSize.A4, PageOrientation pageOrientation = PageOrientation.Portrait, string customFlags = null)
+        public byte[] FromUrl(string url, PageSize pageSize = PageSize.A4, PageOrientation pageOrientation = PageOrientation.Portrait, string customFlags = null, int? timeOut = null)
         {
             var filename = Path.Combine(directory, $"{Guid.NewGuid()}.pdf");
             var arguments = $"--page-size {pageSize} --orientation {pageOrientation} {customFlags} \"{url}\" \"{filename}\"";
@@ -80,7 +82,8 @@ namespace NetCoreHTMLToPDF
                 if (process != null)
                 {
                     process.ErrorDataReceived += Process_ErrorDataReceived;
-                    process.WaitForExit();
+                    if (timeOut == null) process.WaitForExit();
+                    else process.WaitForExit(timeOut.Value);
                 }
             }
             catch (Exception e)
